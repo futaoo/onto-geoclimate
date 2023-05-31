@@ -1,0 +1,19 @@
+PREFIX lgdo: <http://linkedgeodata.org/ontology/>
+PREFIX spatialF: <http://jena.apache.org/function/spatial#>
+PREFIX unit: <http://www.opengis.net/def/uom/OGC/1.0/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX ca: <http://www.semanticweb.org/jiantaowu/ontologies/2022/3/CubeCA/>
+PREFIX geos: <http://www.opengis.net/ont/geosparql#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+select ?wktLabel ?f ?sta ?dst {
+  service <http://localhost:8014/sparql> 
+  {
+    select * { ?f a lgdo:Farmyard; geos:hasGeometry/geos:asWKT ?fWkt ; rdfs:label ?wktLabel .} 
+  } 
+  service <loop:> {
+  select ?sta ?dst {
+    ?sta a sosa:Platform ; ca:hasPointGeometry/geos:asWKT ?sWkt .
+    bind (spatialF:distance(?sWkt, ?fWkt, unit:kilometre) as ?dst)} order by asc(?dst) limit 1
+  }
+}

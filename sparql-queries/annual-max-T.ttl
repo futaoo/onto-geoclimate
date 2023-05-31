@@ -1,0 +1,18 @@
+PREFIX car: <http://www.semanticweb.org/jiantaowu/ontologies/2022/3/CubeCA/resource/>
+PREFIX ca: <http://www.semanticweb.org/jiantaowu/ontologies/2022/3/CubeCA/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+
+
+SELECT (MAX(?r) as ?TXx) ?yr {
+
+    ?s a sosa:Observation ; 
+        sosa:isObservedBy car:station_ie_175 ; 
+        ca:hasClimateAnalyticsCode code:AIR-TMAX-d; 
+        sosa:resultTime ?t ; 
+        sosa:hasSimpleResult ?r.
+    BIND (year(?t) as ?yr) .
+
+} 
+
+GROUP BY ?yr

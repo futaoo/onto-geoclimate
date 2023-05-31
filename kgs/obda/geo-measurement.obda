@@ -1,0 +1,54 @@
+[PrefixDeclaration]
+:		http://www.semanticweb.org/jiantaowu/ontologies/2022/3/CubeCA/
+geo:		http://www.w3.org/2003/01/geo/wgs84_pos#
+owl:		http://www.w3.org/2002/07/owl#
+rdf:		http://www.w3.org/1999/02/22-rdf-syntax-ns#
+ssn:		http://www.w3.org/ns/ssn/
+xml:		http://www.w3.org/XML/1998/namespace
+xsd:		http://www.w3.org/2001/XMLSchema#
+geof:		http://www.opengis.net/def/function/geosparql/
+geos:		http://www.opengis.net/ont/geosparql#
+obda:		https://w3id.org/obda/vocabulary#
+rdfs:		http://www.w3.org/2000/01/rdf-schema#
+sosa:		http://www.w3.org/ns/sosa/
+time:		http://www.w3.org/2006/time#
+ontodt:		http://www.ontodm.com/OntoDT#
+
+[MappingDeclaration] @collection [[
+mappingId	geom:station
+target		:resource/geom/station_ie_{id} a geos:Geometry ; geos:asWKT {wkt}^^geos:wktLiteral . 
+source		select id, ST_AsText(geom) as wkt from public.station_ie
+
+mappingId	station
+target		:resource/station_ie_{id} a sosa:Platform , geos:Feature ; rdfs:label {name} ; geo:lat {latitude} ; geo:long {longitude} ; geo:alt {height} ; :hasPointGeometry :resource/geom/station_ie_{id} ; :createdTime {open_year}^^xsd:year ; :endedTime {close_year}^^xsd:year . 
+source		select * from public.station_ie
+
+mappingId	geom:soil
+target		:resource/geom/soil_ie_{gid} a geos:Geometry ; geos:asWKT {wkt}^^geos:wktLiteral . 
+source		select gid, ST_AsText(geom) as wkt from public.soil_ie
+
+mappingId	soil
+target		:resource/soil_ie_{gid} a sosa:Sample , geos:Feature ; :hasClimateAnalysisCode :resource/epa_{associatio} ; :hasPolygonGeometry :resource/geom/soil_ie_{gid} . 
+source		select * from public.soil_ie
+
+mappingId	EPASoilCode
+target		:resource/epa_{associatio} a :EPASoilCode ; rdfs:label {association_name} ; :codeOfProperty :SoilType ; :codeOfFeature :Soil . 
+source		select * from public.soil_legend
+
+mappingId	geom:landcover
+target		:resource/geom/corine_{objectid} a geos:Geometry ; geos:asWKT {wkt}^^geos:wktLiteral . 
+source		select objectid, ST_AsText(wkb_geometry) as wkt from corine_landcover
+
+mappingId	landcover
+target		:resource/corine_{objectid} a sosa:Sample , geos:Feature ; :hasClimateAnalysisCode :resource/corine_{code_18} ; :hasPolygonGeometry :resource/geom/corine_{objectid} . 
+source		select * from public.corine_landcover
+
+mappingId	CORINELandCoverCode
+target		:resource/corine_{clc_code} a :CORINELandCoverCode ; rdfs:label {label} ; :codeOfProperty :LandCover ; :codeOfFeature :Land . 
+source		select * from public.corine_legend
+
+mappingId	measurement
+target		:resource/{var}_{sta_id}_{xsd_date} a sosa:Observation ; sosa:hasSimpleResult {val}^^xsd:float ; :hasClimateAnalysisCode :resource/cacode/{var} ; sosa:isObservedBy :resource/station_ie_{sta_id} ; sosa:resultTime {xsd_date}^^xsd:dateTime . 
+source		select * from public.measurement_ie
+]]
+

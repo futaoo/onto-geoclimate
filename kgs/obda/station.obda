@@ -1,0 +1,24 @@
+[PrefixDeclaration]
+:		http://www.semanticweb.org/jiantaowu/ontologies/2022/3/CubeCA/
+geo:		http://www.w3.org/2003/01/geo/wgs84_pos#
+owl:		http://www.w3.org/2002/07/owl#
+rdf:		http://www.w3.org/1999/02/22-rdf-syntax-ns#
+ssn:		http://www.w3.org/ns/ssn/
+xml:		http://www.w3.org/XML/1998/namespace
+xsd:		http://www.w3.org/2001/XMLSchema#
+geof:		http://www.opengis.net/def/function/geosparql/
+geos:		http://www.opengis.net/ont/geosparql#
+obda:		https://w3id.org/obda/vocabulary#
+rdfs:		http://www.w3.org/2000/01/rdf-schema#
+sosa:		http://www.w3.org/ns/sosa/
+time:		http://www.w3.org/2006/time#
+
+[MappingDeclaration] @collection [[
+mappingId	geom:station
+target		:resource/geom/station_ie_{id} a geos:Geometry ; geos:asWKT {wkt}^^geos:wktLiteral . 
+source		select id, ST_AsText(geom) as wkt from public.station_ie
+
+mappingId	station
+target		:resource/station_ie_{id} a sosa:Platform , geos:Feature ; rdfs:label {name} ; geo:lat {latitude} ; geo:long {longitude} ; geo:alt {height} ; :hasPointGeometry :resource/geom/station_ie_{id} ; :createdTime {open_year}^^xsd:year ; :endedTime {close_year}^^xsd:year . 
+source		select * from public.station_ie
+]]
